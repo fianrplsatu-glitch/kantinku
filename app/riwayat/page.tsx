@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { formatRupiah } from "@/data/menu";
-import { Clock, Receipt } from "lucide-react";
+import { Clock, Receipt, Trash2 } from "lucide-react";
 
 interface OrderItem {
   id: number;
@@ -19,18 +19,31 @@ interface Order {
 }
 
 export default function RiwayatPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-
-  useEffect(() => {
+  const [orders, setOrders] = useState<Order[]>(() => {
+    if (typeof window === "undefined") return [];
     const savedHistory = localStorage.getItem("riwayat");
-    if (savedHistory) {
-      try {
-        setOrders(JSON.parse(savedHistory));
-      } catch {
-        setOrders([]);
-      }
+    if (!savedHistory) return [];
+    try {
+      const parsed = JSON.parse(savedHistory);
+      const validOrders = Array.isArray(parsed) ? parsed : [];
+      return [...validOrders].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+      );
+    } catch {
+      return [];
     }
-  }, []);
+  });
+
+  const handleClearHistory = () => {
+    if (
+      window.confirm(
+        "Apakah Anda yakin ingin menghapus seluruh riwayat pesanan?",
+      )
+    ) {
+      localStorage.removeItem("riwayat");
+      setOrders([]);
+    }
+  };
 
   const totalBelanjaKeseluruhan = orders.reduce(
     (acc, curr) => acc + curr.grandTotal,
@@ -39,9 +52,19 @@ export default function RiwayatPage() {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
-      <h2 className="text-xl font-bold text-white flex items-center gap-2">
-        <Clock className="w-5 h-5 text-amber-400" /> Riwayat Pesanan
-      </h2>
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <Clock className="w-5 h-5 text-amber-400" /> Riwayat Pesanan
+        </h2>
+        {orders.length > 0 && (
+          <button
+            onClick={handleClearHistory}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-xl text-xs font-semibold transition-all"
+          >
+            <Trash2 className="w-3.5 h-3.5" /> Hapus Riwayat
+          </button>
+        )}
+      </div>
 
       {orders.length === 0 ? (
         <div className="text-center py-20 bg-slate-800/40 rounded-2xl border border-slate-800">

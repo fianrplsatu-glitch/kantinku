@@ -1,6 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { formatRupiah } from "@/data/menu";
-import type { MenuItem } from "@/data/menu";
+import { formatRupiah, MenuItem } from "@/data/menu";
 import { Heart, Plus, Info } from "lucide-react";
 
 interface KartuMenuProps {
@@ -19,7 +20,9 @@ export default function KartuMenu({
   const isAvailable = item.stok > 0;
 
   return (
-    <div className="bg-slate-800 rounded-2xl border border-slate-700/60 overflow-hidden flex flex-col justify-between group hover:border-slate-600 transition-all">
+    <div
+      className={`bg-slate-800 rounded-2xl border border-slate-700/60 overflow-hidden flex flex-col justify-between group transition-all ${!isAvailable ? "opacity-60 grayscale" : "hover:border-slate-600"}`}
+    >
       <div>
         <div className="h-40 w-full relative bg-slate-950 overflow-hidden">
           <img
@@ -29,7 +32,8 @@ export default function KartuMenu({
           />
           <button
             onClick={() => onToggleFavorite(item.id)}
-            className="absolute top-3 right-3 p-2 rounded-full bg-slate-900/80 backdrop-blur-md text-slate-300 hover:text-rose-500"
+            className="absolute top-3 right-3 p-2 rounded-full bg-slate-900/80 backdrop-blur-md text-slate-300 hover:text-rose-500 transition-colors"
+            title={isFavorite ? "Hapus dari Favorit" : "Tambah ke Favorit"}
           >
             <Heart
               className={`w-4 h-4 ${isFavorite ? "fill-rose-500 text-rose-500" : ""}`}
@@ -65,21 +69,21 @@ export default function KartuMenu({
       <div className="p-4 pt-0 grid grid-cols-2 gap-2">
         <Link
           href={`/menu/${item.id}`}
-          className="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1 text-center"
+          className="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1 text-center transition-colors"
         >
           <Info className="w-3.5 h-3.5" /> Detail
         </Link>
         {isAvailable ? (
           <button
             onClick={() => onAddToCart(item)}
-            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md shadow-amber-500/10"
+            className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1 shadow-md shadow-amber-500/10 transition-colors"
           >
             <Plus className="w-3.5 h-3.5 stroke-[3]" /> Beli
           </button>
         ) : (
           <button
             disabled
-            className="bg-slate-800 text-slate-600 font-bold py-2 px-3 rounded-xl text-xs cursor-not-allowed"
+            className="bg-slate-800 text-slate-500 font-bold py-2 px-3 rounded-xl text-xs cursor-not-allowed border border-slate-700"
           >
             Habis
           </button>

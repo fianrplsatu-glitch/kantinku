@@ -1,20 +1,63 @@
 "use client";
 
 import { useState } from "react";
-import { daftarMenu } from "@/data/menu";
+import { daftarMenu, type MenuItem } from "@/data/menu";
 import KartuMenu from "@/components/KartuMenu";
 import { Search, ArrowUpDown, UtensilsCrossed } from "lucide-react";
+
+const getSavedFavorites = () => {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const savedFavorites = JSON.parse(localStorage.getItem("favorit") ?? "[]");
+    return Array.isArray(savedFavorites) ? savedFavorites : [];
+  } catch {
+    return [];
+  }
+};
+
+const createOrderEntry = (item: MenuItem) => ({
+  id: `${Date.now()}`,
+  date: new Date().toISOString(),
+  items: [{ id: item.id, nama: item.nama, harga: item.harga, qty: 1 }],
+  grandTotal: item.harga,
+});
 
 export default function MenuPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Semua");
   const [sortBy, setSortBy] = useState("default");
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [favorites, setFavorites] = useState<number[]>(getSavedFavorites);
 
   const toggleFavorite = (id: number) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id],
-    );
+    const nextFavorites = favorites.includes(id)
+      ? favorites.filter((favoriteId) => favoriteId !== id)
+      : [...favorites, id];
+
+    setFavorites(nextFavorites);
+    localStorage.setItem("favorit", JSON.stringify(nextFavorites));
+  };
+
+  const handleAddToCart = (item: MenuItem) => {
+    const savedCart = JSON.parse(localStorage.getItem("keranjang") ?? "[]");
+    const currentCart = Array.isArray(savedCart) ? savedCart : [];
+    const existingIndex = currentCart.findIndex((cartItem) => cartItem.id === item.id);
+
+    const nextCart = [...currentCart];
+    if (existingIndex >= 0) {
+      nextCart[existingIndex].qty += 1;
+    } else {
+      nextCart.push({ id: item.id, nama: item.nama, harga: item.harga, qty: 1 });
+    }
+
+    localStorage.setItem("keranjang", JSON.stringify(nextCart));
+
+    const savedHistory = JSON.parse(localStorage.getItem("riwayat") ?? "[]");
+    const currentHistory = Array.isArray(savedHistory) ? savedHistory : [];
+    const nextHistory = [createOrderEntry(item), ...currentHistory];
+
+    localStorage.setItem("riwayat", JSON.stringify(nextHistory));
+    alert(`${item.nama} ditambahkan ke keranjang!`);
   };
 
   const filteredMenu = daftarMenu
@@ -97,7 +140,7 @@ export default function MenuPage() {
               item={item}
               isFavorite={favorites.includes(item.id)}
               onToggleFavorite={toggleFavorite}
-              onAddToCart={(i) => alert(`${i.nama} ditambahkan ke keranjang!`)}
+              onAddToCart={handleAddToCart}
             />
           ))}
         </div>

@@ -5,31 +5,31 @@ import { MenuItem, formatRupiah } from "@/data/menu";
 import { Heart, Trash2 } from "lucide-react";
 import Link from "next/link";
 
+const getSavedFavorites = () => {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const savedFavs = JSON.parse(localStorage.getItem("favorit") ?? "[]");
+    return Array.isArray(savedFavs) ? savedFavs : [];
+  } catch {
+    return [];
+  }
+};
+
 export default function FavoritPage() {
   const [menuList, setMenuList] = useState<MenuItem[]>([]);
-  const [favorites, setFavorites] = useState<number[]>([]);
+  const [favorites, setFavorites] = useState<number[]>(getSavedFavorites);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Ambil favorit dari localStorage (kunci "favorit")
-    const savedFavs = localStorage.getItem("favorit");
-    if (savedFavs) {
-      try {
-        setFavorites(JSON.parse(savedFavs));
-      } catch {
-        setFavorites([]);
-      }
-    }
-
-    // Fetch data dari /api/menu
     fetch("/api/menu")
       .then((res) => {
         if (!res.ok) throw new Error("Gagal memuat data menu");
         return res.json();
       })
       .then((data) => {
-        setMenuList(data);
+        setMenuList(Array.isArray(data) ? data : []);
         setLoading(false);
       })
       .catch((err) => {
