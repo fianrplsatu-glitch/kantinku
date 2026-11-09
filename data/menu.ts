@@ -1,12 +1,14 @@
-export type Menu = {
+export interface MenuItem {
   id: number;
   nama: string;
-  kategori: string;
+  kategori: 'Makanan' | 'Minuman' | 'Cemilan';
   harga: number;
   stok: number;
-};
+  deskripsi?: string;
+  foto?: string;
+}
 
-export const menu: Menu[] = [
+export const menu: MenuItem[] = [
   {
     id: 1,
     nama: "Nasi Goreng Spesial",
@@ -21,6 +23,10 @@ export const menu: Menu[] = [
   { id: 6, nama: "Risol Mayo", kategori: "Cemilan", harga: 4000, stok: 3 },
 ];
 
+export const daftarMenu = menu;
+
 export function rupiah(n: number) {
   return "Rp" + n.toLocaleString("id-ID");
 }
+
+export const formatRupiah = rupiah;
