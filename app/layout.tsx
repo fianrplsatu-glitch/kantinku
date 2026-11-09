@@ -1,9 +1,15 @@
 import "./globals.css";
 import Link from "next/link";
-import { Heart, Home, Info, UtensilsCrossed } from "lucide-react";
+import {
+  Home,
+  UtensilsCrossed,
+  Heart,
+  ShoppingBag,
+  Receipt,
+} from "lucide-react";
 
 export const metadata = {
-  title: "Kantinku",
+  title: "KantinKu",
   description: "Pesan Menu Kantin Sekolah Cepat & Mudah",
 };
 
@@ -31,6 +37,7 @@ export default function RootLayout({
               </div>
             </Link>
 
+            {/* Navbar Utama dengan 5 Menu */}
             <nav className="flex items-center bg-slate-900/60 p-1.5 rounded-xl border border-slate-700/60 gap-1 overflow-x-auto">
               <Link
                 href="/"
@@ -51,10 +58,16 @@ export default function RootLayout({
                 <Heart className="w-4 h-4" /> Favorit
               </Link>
               <Link
-                href="/tentang"
+                href="/cart"
                 className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all"
               >
-                <Info className="w-4 h-4" /> Tentang
+                <ShoppingBag className="w-4 h-4" /> Keranjang
+              </Link>
+              <Link
+                href="/riwayat"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all"
+              >
+                <Receipt className="w-4 h-4" /> Riwayat
               </Link>
             </nav>
           </div>
