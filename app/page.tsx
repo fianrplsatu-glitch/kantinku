@@ -6,38 +6,32 @@ import Image from "next/image";
 import { ArrowRight, Heart, ShoppingBag, UtensilsCrossed } from "lucide-react";
 import { daftarMenu, formatRupiah } from "@/data/menu";
 
-const getFavoriteCount = () => {
-  if (typeof window === "undefined") return 0;
-
-  try {
-    const savedFavorites = JSON.parse(localStorage.getItem("favorit") ?? "[]");
-    return Array.isArray(savedFavorites) ? savedFavorites.length : 0;
-  } catch {
-    return 0;
-  }
-};
-
-const getCartCount = () => {
-  if (typeof window === "undefined") return 0;
-
-  try {
-    const savedCart = JSON.parse(localStorage.getItem("keranjang") ?? "[]");
-    return Array.isArray(savedCart)
-      ? savedCart.reduce((total, item) => total + (item.qty || 0), 0)
-      : 0;
-  } catch {
-    return 0;
-  }
-};
-
 export default function Page() {
-  const [favoriteCount, setFavoriteCount] = useState(getFavoriteCount);
-  const [cartCount, setCartCount] = useState(getCartCount);
+  const [favoriteCount, setFavoriteCount] = useState<number>(0);
+  const [cartCount, setCartCount] = useState<number>(0);
 
   useEffect(() => {
     const syncCounts = () => {
-      setFavoriteCount(getFavoriteCount());
-      setCartCount(getCartCount());
+      try {
+        const savedFavorites = JSON.parse(
+          localStorage.getItem("favorit") ?? "[]",
+        );
+        setFavoriteCount(
+          Array.isArray(savedFavorites) ? savedFavorites.length : 0,
+        );
+      } catch {
+        setFavoriteCount(0);
+      }
+
+      try {
+        const savedCart = JSON.parse(localStorage.getItem("keranjang") ?? "[]");
+        const totalQty = Array.isArray(savedCart)
+          ? savedCart.reduce((total, item) => total + (item.qty || 0), 0)
+          : 0;
+        setCartCount(totalQty);
+      } catch {
+        setCartCount(0);
+      }
     };
 
     syncCounts();
@@ -125,13 +119,13 @@ export default function Page() {
               href={`/menu/${item.id}`}
               className="block bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden hover:border-slate-600 transition-all"
             >
-              <div className="h-36 bg-slate-950">
+              <div className="h-36 bg-slate-950 relative">
                 <Image
-                  src={item.foto ?? "/"}
+                  src={item.foto ?? "/placeholder.jpg"}
                   alt={item.nama}
-                  width={400}
-                  height={240}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover"
                 />
               </div>
               <div className="p-4 space-y-2">

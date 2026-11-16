@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { formatRupiah, MenuItem } from "@/data/menu";
 import { Heart, Plus, Info } from "lucide-react";
@@ -25,9 +26,11 @@ export default function KartuMenu({
     >
       <div>
         <div className="h-40 w-full relative bg-slate-950 overflow-hidden">
-          <img
-            src={item.foto}
+          <Image
+            src={item.foto ?? "/"}
             alt={item.nama}
+            width={400}
+            height={240}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
           />
           <button
