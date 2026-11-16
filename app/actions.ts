@@ -1,6 +1,15 @@
 "use server";
 
-export async function submitPesan(prevState: any, formData: FormData) {
+export type PesanState = {
+  success: boolean;
+  message: string;
+  errors: Partial<Record<"nama" | "email" | "jumlah", string>>;
+};
+
+export async function submitPesan(
+  _prevState: PesanState,
+  formData: FormData,
+): Promise<PesanState> {
   const nama = formData.get("nama")?.toString().trim() || "";
   const email = formData.get("email")?.toString().trim() || "";
   const jumlahStr = formData.get("jumlah")?.toString() || "0";
@@ -26,11 +35,15 @@ export async function submitPesan(prevState: any, formData: FormData) {
   }
 
   if (Object.keys(errors).length > 0) {
-    return { success: false, errors };
+    return { success: false, message: "", errors };
   }
 
   // Simulasi proses penyimpanan ke database
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  return { success: true, message: "Pesanan berhasil dikirim!" };
+  return {
+    success: true,
+    message: "Pesanan berhasil dikirim!",
+    errors: {},
+  };
 }

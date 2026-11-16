@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { submitPesan } from "@/app/actions";
+import { submitPesan, type PesanState } from "@/app/actions";
 
 // Komponen tombol terpisah untuk membaca status 'pending'
 function SubmitButton() {
@@ -19,7 +19,7 @@ function SubmitButton() {
   );
 }
 
-const initialState = {
+const initialState: PesanState = {
   success: false,
   message: "",
   errors: {},
